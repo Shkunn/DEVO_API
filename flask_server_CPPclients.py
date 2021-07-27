@@ -375,7 +375,7 @@ def handle_message(data):
         download_dict["id"] = maps[0]["map_name"]
         download_dict["localisation"] = maps[0]["place"]
         download_dict["link_session"] = "http://127.0.0.1:5000/map/download/map.session"
-        download_dict["link_png"] = "http://127.0.0.1:5000/map/download/map.pnj"
+        download_dict["link_png"] = "http://127.0.0.1:5000/map/download/map.png"
 
         socketio.emit('download', download_dict, to=request.sid)
 
