@@ -232,13 +232,13 @@ def one_map(place):
 
 @app.route('/map/download/map.session', methods=['GET', 'POST'])
 def map_session():
-    with open("test.txt") as fh:
+    with open("map.session") as fh:
         map = fh.read()
         return map
 
 @app.route('/map/download/map.pnj', methods=['GET', 'POST'])
 def map_pnj():
-    with open("test.txt") as fh:
+    with open("map.pnj") as fh:
         map = fh.read()
         return map
 
