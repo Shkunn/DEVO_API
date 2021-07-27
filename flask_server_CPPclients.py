@@ -34,9 +34,9 @@ today = str(date.today())
 robot = {}
 
 # SQL PARAM
-map_database             = "DATABASE/map_sqlite.db"
-robot_database           = "DATABASE/robots_sqlite.db"
-position_target_database = "DATABASE/position_targets.db"
+map_database             = "map_sqlite.db"
+robot_database           = "robots_sqlite.db"
+position_target_database = "position_targets.db"
 
 
 # FIREBASE PARAM
