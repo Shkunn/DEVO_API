@@ -236,9 +236,9 @@ def map_session():
         map = fh.read()
         return map
 
-@app.route('/map/download/map.pnj', methods=['GET', 'POST'])
+@app.route('/map/download/map.png', methods=['GET', 'POST'])
 def map_pnj():
-    with open("map.pnj") as fh:
+    with open("map.png") as fh:
         map = fh.read()
         return map
 
@@ -375,7 +375,7 @@ def handle_message(data):
         download_dict["id"] = maps[0]["map_name"]
         download_dict["localisation"] = maps[0]["place"]
         download_dict["link_session"] = "http://127.0.0.1:5000/map/download/map.session"
-        download_dict["link_pnj"] = "http://127.0.0.1:5000/map/download/map.pnj"
+        download_dict["link_png"] = "http://127.0.0.1:5000/map/download/map.pnj"
 
         socketio.emit('download', download_dict, to=request.sid)
 
