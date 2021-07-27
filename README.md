@@ -2,7 +2,7 @@
 
 Download librairies:
 ```
-pip3 install -r requirements.txt
+pip3 install -r requirement.txt
 ```
 
 Launch server:
