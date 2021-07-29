@@ -327,7 +327,6 @@ def handle_message(auth):
     username = request.sid
     room = request.sid
     join_room(room)
-    # socketio.send(username + ' has entered the room.', to=room)
 
     if "robot" in robot:
         robot[auth].append(username)
@@ -344,6 +343,8 @@ def handle_message(auth):
     conn_robot.commit()
 
     position_dict[auth] = []
+
+    socketio.emit('received', "ok", to=username)
 
 @socketio.on('interface')
 def handle_message_interface(auth):

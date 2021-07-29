@@ -33,18 +33,28 @@ def send_position():
     sio.emit('position', data = position.tolist())
 
 @sio.on('command_to_do')
-def good_map(data):
+def good_command(data):
     print('DATA: ', data)
 
 @sio.on('position_to_reach')
-def good_map(data):
+def good_position(data):
     print('DATA: ', data)
+
+@sio.on('received')
+def received(data):
+    print(data)
 
 
 if __name__ == '__main__':
+    # sio.connect('http://localhost:5000')    
     sio.connect('https://devo-api.herokuapp.com/:5000')
-    sio.emit('robot', "MK2R2_1")
-    sio.emit("check_download")
+    print(sio.connected)
+
+    if (sio.connected):
+        print("connected")
+        sio.emit('robot', "MK2R2_1")
+
+    # sio.emit("check_download")
     # print('sid: ', sio.get_sid())
 
     # check_map()
