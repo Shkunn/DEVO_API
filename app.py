@@ -33,7 +33,7 @@ firebase_admin.initialize_app(cred, {
 app = Flask(__name__)
 CORS(app)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app, cors_allowed_origins='http://localhost:8080')
+socketio = SocketIO(app, cors_allowed_origins='*')
 
 
 today = str(date.today())
