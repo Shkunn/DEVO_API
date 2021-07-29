@@ -43,7 +43,7 @@ def good_map(data):
 
 if __name__ == '__main__':
     sio.connect('http://localhost:5000')
-    sio.emit('name', "MK2R2_1")
+    sio.emit('robot', "MK2R2_1")
     sio.emit("check_download")
     # print('sid: ', sio.get_sid())
 

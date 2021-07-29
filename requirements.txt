@@ -1,0 +1,10 @@
+eventlet==0.31.1
+firebase_admin==5.0.1
+Flask==1.0.2
+Flask_SocketIO==5.1.0
+Flask_Cors==3.0.10
+gevent_socketio==0.3.6
+numpy==1.21.1
+requests==2.26.0
+wget==3.2
+gunicorn

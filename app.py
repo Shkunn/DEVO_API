@@ -8,6 +8,9 @@ import numpy as np
 import time
 from datetime import date
 
+import eventlet
+eventlet.monkey_patch()
+
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
@@ -19,6 +22,8 @@ from requests.api import get
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
     close_room, rooms, disconnect
 
+from flask_cors import CORS
+
 cred = credentials.Certificate('FIREBASE/mk2r2-firebase.json')
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://mk2r2-firebase-default-rtdb.europe-west1.firebasedatabase.app/'
@@ -26,12 +31,14 @@ firebase_admin.initialize_app(cred, {
 
 
 app = Flask(__name__)
+CORS(app)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins='http://localhost:8080')
 
 
 today = str(date.today())
 robot = {}
+interface = {}
 
 # SQL PARAM
 map_database             = "map_sqlite.db"
@@ -45,10 +52,30 @@ map_1 = {}
 position_dict = {}
 
 dictionnary = {}
-
 download_dict = {}
-
 date_dict[today] = {}
+
+# sensor doit avoir une de ces valeurs[ 0, 1, 2 ,3]
+global_sensor = {
+    'sensors' : [3, 3, 3, 3, 3, 3, 3], 
+    'stats' : {
+        'volt' : "10",
+        'heatCore' : "70",
+        'esp32_A' : "ON",
+        "esp32_B" : "OFF",
+        "slam" : "WAITING",
+        "speed" : "5",
+        'timeUsed' : "10"
+    },
+    'infos' : {
+        'status' : True,
+        'name' : "MK2R2_1",
+        'ip' : '172.21.72.168',
+        'ping' : "30"
+    },
+    'position' : [50, 50]
+}
+
 
 
 def db_map_connection():
@@ -74,7 +101,7 @@ def db_position_connection():
     except sqlite3.Error as e:
         print(e)
     return conn_position
-
+interface
 
 conn_map = db_map_connection()
 cur_map = conn_map.cursor()
@@ -84,7 +111,6 @@ cur_robot = conn_robot.cursor()
 
 conn_position = db_position_connection()
 cur_position = conn_position.cursor()
-
 
 
 @app.route('/')
@@ -237,7 +263,7 @@ def map_session():
         return map
 
 @app.route('/map/download/map.png', methods=['GET', 'POST'])
-def map_pnj():
+def map_png():
     with open("test.txt") as fh:
         map = fh.read()
         return map
@@ -291,13 +317,11 @@ def robot_position_to_reach(name, position):
 
         return data
 
-
-
 @socketio.on('connect')
 def test_connect():
     print('Client Connected')
 
-@socketio.on('name')
+@socketio.on('robot')
 def handle_message(auth):
     print(auth, 'Connected')
     username = request.sid
@@ -320,6 +344,23 @@ def handle_message(auth):
     conn_robot.commit()
 
     position_dict[auth] = []
+
+@socketio.on('interface')
+def handle_message_interface(auth):
+    print(auth, 'Connected')
+    username = request.sid
+    room = request.sid
+    join_room(room)
+    
+    if "interface" in interface:
+        interface[auth].append(username)
+    else :
+        print(username)
+        interface[auth] = username
+
+    with open('map.png', 'rb') as f:
+        image_data = f.read()
+    socketio.emit('received_image', {'image_data': image_data}, sid=username)
 
 @socketio.on('disconnect')
 def test_disconnect():
@@ -430,6 +471,21 @@ def get_data(data):
 
     # Result is the name of the map which share the sme localisation a the data from the robot 
     return result
+
+def send_data_to_Interface():
+    while True:
+        eventlet.sleep(2)
+        if "interface_DVIC" in interface:
+            sid = interface["interface_DVIC"]
+            print("SEND", sid)
+            socketio.emit('MESSAGE', global_sensor, to=sid)
+
+def send_map_to_Interface():
+    with open('map.png', 'rb') as f:
+        image_data = f.read()
+    socketio.emit('my-image-event', {'image_data': image_data})
+
+eventlet.spawn(send_data_to_Interface)
 
 if __name__ == '__main__':
     socketio.run(app)
